@@ -11,7 +11,15 @@ struct MainView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                CreditCardView()
+                TabView {
+                    ForEach(0..<5) { num in
+                        CreditCardView()
+                            .padding(.bottom, 40)
+                    }
+                }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+                .indexViewStyle(PageIndexViewStyle.init(backgroundDisplayMode: .always))
+                .frame(height: 280)
             }
             .navigationTitle("Credit Cards")
             .navigationBarItems(trailing: addCardButton)
