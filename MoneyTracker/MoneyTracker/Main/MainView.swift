@@ -11,27 +11,58 @@ struct MainView: View {
     
     @State private var shouldPresentAddCardForm = false
     
+    //amount to credit card variable
+    @Environment(\.managedObjectContext) private var viewContext
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: true)],animation: .default)
+    private var cards: FetchedResults<Card>
+    
     var body: some View {
         NavigationView {
             ScrollView {
-                TabView {
-                    ForEach(0..<5) { num in
-                        CreditCardView()
-                            .padding(.bottom, 40)
+                if !cards.isEmpty {
+                    TabView {
+                        ForEach(cards) { num in
+                            CreditCardView()
+                                .padding(.bottom, 40)
+                        }
                     }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+                    .indexViewStyle(PageIndexViewStyle.init(backgroundDisplayMode: .always))
+                    .frame(height: 280)
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
-                .indexViewStyle(PageIndexViewStyle.init(backgroundDisplayMode: .always))
-                .frame(height: 280)
+        
                 Spacer()
                     .fullScreenCover(isPresented: $shouldPresentAddCardForm) {
                     AddCardForm()
                 }
             }
             .navigationTitle("Credit Cards")
-            .navigationBarItems(trailing: addCardButton)
+            .navigationBarItems(leading: HStack {
+                addItemButton
+                deleteAllButton
+            }, trailing: addCardButton)
         }
     }
+    
+    var addItemButton: some View {
+        Button {
+            withAnimation {
+                let viewContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+
+                let card = Card(context: viewContext)
+                card.timestamp = Date()
+                
+                do {
+                    try viewContext.save()
+                } catch {
+                }
+            }
+        } label: {
+            Text("Add Item")
+        }
+
+    }
+    
     
     struct CreditCardView: View {
         var body: some View {
@@ -66,6 +97,22 @@ struct MainView: View {
         }
     }
     
+    var deleteAllButton: some View {
+        Button {
+            cards.forEach { card in
+                viewContext.delete(card)
+            }
+            do {
+                try viewContext.save()
+            } catch {
+                
+            }
+        } label: {
+            Text("Delete All")
+        }
+
+    }
+    
     var addCardButton: some View {
         Button(action: {
             shouldPresentAddCardForm.toggle()
@@ -82,6 +129,9 @@ struct MainView: View {
 
 struct MainView_Previews: PreviewProvider {
     static var previews: some View {
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+
         MainView()
+            .environment(\.managedObjectContext, context)
     }
 }
