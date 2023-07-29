@@ -17,6 +17,9 @@
 		4B09B19226D062ED00A677FD /* MoneyTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B09B19126D062ED00A677FD /* MoneyTrackerTests.swift */; };
 		4B09B19D26D062ED00A677FD /* MoneyTrackerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B09B19C26D062ED00A677FD /* MoneyTrackerUITests.swift */; };
 		4B09B1AC26D08A8400A677FD /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B09B1AB26D08A8400A677FD /* MainView.swift */; };
+		4B6720842A7460340078EBA2 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6720832A7460340078EBA2 /* SwiftUIView.swift */; };
+		4B6720852A7460340078EBA2 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6720832A7460340078EBA2 /* SwiftUIView.swift */; };
+		4B6720862A7460340078EBA2 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6720832A7460340078EBA2 /* SwiftUIView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +56,7 @@
 		4B09B19C26D062ED00A677FD /* MoneyTrackerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoneyTrackerUITests.swift; sourceTree = "<group>"; };
 		4B09B19E26D062ED00A677FD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4B09B1AB26D08A8400A677FD /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		4B6720832A7460340078EBA2 /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,9 +149,18 @@
 		4B09B1AA26D08A6500A677FD /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				4B6720822A74601C0078EBA2 /* AddCardForm */,
 				4B09B1AB26D08A8400A677FD /* MainView.swift */,
 			);
 			path = Main;
+			sourceTree = "<group>";
+		};
+		4B6720822A74601C0078EBA2 /* AddCardForm */ = {
+			isa = PBXGroup;
+			children = (
+				4B6720832A7460340078EBA2 /* SwiftUIView.swift */,
+			);
+			path = AddCardForm;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -282,6 +295,7 @@
 			files = (
 				4B09B17826D062EB00A677FD /* AppDelegate.swift in Sources */,
 				4B09B17F26D062EB00A677FD /* MoneyTracker.xcdatamodeld in Sources */,
+				4B6720842A7460340078EBA2 /* SwiftUIView.swift in Sources */,
 				4B09B17A26D062EB00A677FD /* SceneDelegate.swift in Sources */,
 				4B09B1AC26D08A8400A677FD /* MainView.swift in Sources */,
 				4B09B17C26D062EB00A677FD /* ContentView.swift in Sources */,
@@ -292,6 +306,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B6720852A7460340078EBA2 /* SwiftUIView.swift in Sources */,
 				4B09B19226D062ED00A677FD /* MoneyTrackerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,6 +315,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B6720862A7460340078EBA2 /* SwiftUIView.swift in Sources */,
 				4B09B19D26D062ED00A677FD /* MoneyTrackerUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

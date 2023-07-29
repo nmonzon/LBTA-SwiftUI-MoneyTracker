@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct MainView: View {
+    
+    @State private var shouldPresentAddCardForm = false
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -20,6 +23,10 @@ struct MainView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
                 .indexViewStyle(PageIndexViewStyle.init(backgroundDisplayMode: .always))
                 .frame(height: 280)
+                Spacer()
+                    .fullScreenCover(isPresented: $shouldPresentAddCardForm) {
+                    AddCardForm()
+                }
             }
             .navigationTitle("Credit Cards")
             .navigationBarItems(trailing: addCardButton)
@@ -49,7 +56,7 @@ struct MainView: View {
                 LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.6), Color.blue]), startPoint: .center, endPoint: .bottom)
             )
             .overlay(RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.black, lineWidth: 1)
+                .stroke(Color.black.opacity(0.5), lineWidth: 1)
             )
             .foregroundColor(.white)
             .cornerRadius(8)
@@ -61,7 +68,7 @@ struct MainView: View {
     
     var addCardButton: some View {
         Button(action: {
-            
+            shouldPresentAddCardForm.toggle()
         }, label: {
             Text("+ Card")
                 .foregroundColor(.white)
