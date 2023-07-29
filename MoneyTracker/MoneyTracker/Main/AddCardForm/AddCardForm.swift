@@ -54,15 +54,55 @@ struct AddCardForm: View {
                 }
             }
             .navigationTitle("Add Credit Card")
-            .navigationBarItems(leading: Button("Cancel", action: {
-                presentatationMode.wrappedValue.dismiss()
-            }))
+            .navigationBarItems(leading: cancelButton, trailing: saveButton)
         }
+    }
+    
+    private var cancelButton: some View {
+        Button("Cancel", action: {
+            presentatationMode.wrappedValue.dismiss()
+        })
+    }
+    
+    private var saveButton: some View {
+        Button("Save", action: {
+            let viewContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+            let card = Card(context: viewContext)
+            card.name = self.name
+            card.number = self.cardNumber
+            card.limit = Int32(self.creditLimit) ?? 0
+            card.expMonth = Int16(self.month) ?? 0
+            card.expYear = Int16(self.year)
+            card.timestamp = Date() //le da el orden al hacer save
+            card.color = UIColor(self.color).encode()
+            
+            do {
+                try viewContext.save()
+                presentatationMode.wrappedValue.dismiss()
+            } catch {
+                print("Failed to persist new card: \(error)")
+            }
+            
+        })
+    }
+}
+
+extension UIColor {
+    
+    class func color(data: Data) -> UIColor? {
+        return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor
+    }
+    
+    func encode() -> Data? {
+        return try? NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
     }
 }
 
 struct AddCardForm_Previews: PreviewProvider {
     static var previews: some View {
-        AddCardForm()
+//        AddCardForm()
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        MainView()
+            .environment(\.managedObjectContext, context)
     }
 }

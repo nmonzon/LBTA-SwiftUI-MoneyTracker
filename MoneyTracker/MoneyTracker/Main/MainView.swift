@@ -21,8 +21,8 @@ struct MainView: View {
             ScrollView {
                 if !cards.isEmpty {
                     TabView {
-                        ForEach(cards) { num in
-                            CreditCardView()
+                        ForEach(cards) { card in
+                            CreditCardView(card: card)
                                 .padding(.bottom, 40)
                         }
                     }
@@ -65,9 +65,12 @@ struct MainView: View {
     
     
     struct CreditCardView: View {
+        
+        let card: Card
+        
         var body: some View {
             VStack(alignment: .leading,spacing: 16, content: {
-                Text("Apple Blue Visa Card")
+                Text(card.name ?? "")
                     .font(Font.system(size: 24, weight: .semibold, design: Font.Design.default))
                 HStack(){
                     Image("Visa")
@@ -79,12 +82,24 @@ struct MainView: View {
                     Text("Balance: $5,000")
                         .font(Font.system(size: 16, weight: .semibold, design: Font.Design.default))
                 }
-                Text("1234 1234 1234 1234")
-                Text("Credit Limit: $50,000")
+                Text(card.number ?? "")
+                Text("Credit Limit: $\(card.limit)")
             })
             .padding()
             .background(
-                LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.6), Color.blue]), startPoint: .center, endPoint: .bottom)
+                VStack {
+                    
+                    if let colorData = card.color,
+                       let uiColor = UIColor.color(data: colorData) {
+                        LinearGradient(gradient: Gradient(colors: [
+                            Color(uiColor).opacity(0.6),
+                            Color(uiColor)
+                      ]), startPoint: .center, endPoint: .bottom)
+                    } else {
+                        Color.purple
+                    }
+                  
+                }
             )
             .overlay(RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.black.opacity(0.5), lineWidth: 1)
