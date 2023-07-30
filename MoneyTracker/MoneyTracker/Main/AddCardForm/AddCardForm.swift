@@ -9,6 +9,27 @@ import SwiftUI
 
 struct AddCardForm: View {
     
+    let card: Card?
+    
+    init(card: Card? = nil) {
+        self.card = card
+        
+        _name = State(initialValue: card?.name ?? "")
+        _cardNumber = State(initialValue: card?.number ?? "")
+        if let limit = card?.limit {
+            _creditLimit = State(initialValue: String(limit))
+        }
+        _cardType = State(initialValue: card?.type ?? "")
+        
+        _month = State(initialValue: "\(card?.expMonth ?? Int16(1))")
+        _year = State(initialValue: Int(card?.expYear ?? Int16(currentYear)))
+        
+        if let data = card?.color, let uiColor = UIColor.color(data: data) {
+            let c = Color(uiColor)
+            _color = State(initialValue: c)
+        }
+    }
+    
     @Environment(\.presentationMode) var presentatationMode
     @State private var name: String = ""
     @State private var cardNumber: String = ""
@@ -18,6 +39,7 @@ struct AddCardForm: View {
     @State private var month: String = "1"
     @State private var year = Calendar.current.component(.year, from: Date())
     @State private var color = Color.blue
+    let currentYear = Calendar.current.component(.year, from: Date())
     
     var body: some View {
         NavigationView {
@@ -53,7 +75,7 @@ struct AddCardForm: View {
                     ColorPicker("Color", selection: $color)
                 }
             }
-            .navigationTitle("Add Credit Card")
+            .navigationTitle(card != nil ? card?.name ?? "" : "Add Credit Card")
             .navigationBarItems(leading: cancelButton, trailing: saveButton)
         }
     }
@@ -67,7 +89,8 @@ struct AddCardForm: View {
     private var saveButton: some View {
         Button("Save", action: {
             let viewContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-            let card = Card(context: viewContext)
+
+            let card = card != nil ? self.card! : Card(context: viewContext)
             card.name = self.name
             card.number = self.cardNumber
             card.limit = Int32(self.creditLimit) ?? 0
@@ -75,6 +98,7 @@ struct AddCardForm: View {
             card.expYear = Int16(self.year)
             card.timestamp = Date() //le da el orden al hacer save
             card.color = UIColor(self.color).encode()
+            card.type = cardType
             
             do {
                 try viewContext.save()

@@ -13,7 +13,7 @@ struct MainView: View {
     
     //amount to credit card variable
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: true)],animation: .default)
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: false)],animation: .default)
     private var cards: FetchedResults<Card>
     
     var body: some View {
@@ -89,6 +89,9 @@ struct MainView: View {
         
         let card: Card
         @State private var showActionSheet: Bool = false
+        @State private var shouldShowEditForm = false
+        
+        @State var refreshId = UUID()
         
         private func handleDelete() {
             let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -115,6 +118,9 @@ struct MainView: View {
                     }
                     .actionSheet(isPresented: $showActionSheet) {
                         .init(title: Text(card.name ?? ""),message: nil,buttons: [
+                            Alert.Button.default(Text("Edit"),action: {
+                                shouldShowEditForm.toggle()
+                            }),
                             Alert.Button.destructive(Text("Delete Card"),action: handleDelete),
                             Alert.Button.cancel()
                         ])
@@ -132,7 +138,15 @@ struct MainView: View {
                         .font(Font.system(size: 16, weight: .semibold, design: Font.Design.default))
                 }
                 Text(card.number ?? "")
-                Text("Credit Limit: $\(card.limit)")
+                HStack {
+                    Text("Credit Limit: $\(card.limit)")
+                    Spacer()
+                    VStack {
+                        Text("Valid Thru")
+                        Text("\(String(format: "%02d", card.expMonth+1))/\(String(card.expYear % 2000))")
+                    }
+                }
+                    
             })
             .padding()
             .background(
@@ -158,6 +172,9 @@ struct MainView: View {
             .shadow(radius: 5)
             .padding(.horizontal)
             .padding(.top, 8)
+            .fullScreenCover(isPresented: $shouldShowEditForm) {
+                AddCardForm(card: card)
+            }
         }
     }
     
