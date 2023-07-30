@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
     
     @State private var shouldPresentAddCardForm = false
+    @State private var shouldPresentTransactionForm = false
     
     //amount to credit card variable
     @Environment(\.managedObjectContext) private var viewContext
@@ -29,6 +30,22 @@ struct MainView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
                     .indexViewStyle(PageIndexViewStyle.init(backgroundDisplayMode: .always))
                     .frame(height: 280)
+                    
+                    Text("Get started by adding your first transaction!")
+                    Button {
+                        shouldPresentTransactionForm.toggle()
+                    } label: {
+                        Text("+ Transaction")
+                            .padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
+                            .font(.headline)
+                            .background(Color(.label))
+                            .foregroundColor(Color(.systemBackground))
+                            .cornerRadius(5)
+                    }
+                    .fullScreenCover(isPresented: $shouldPresentTransactionForm) {
+                        TransactionForm()
+                    }
+
                 } else {
                     EmptyStateView
                 }
