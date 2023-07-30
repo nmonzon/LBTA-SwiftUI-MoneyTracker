@@ -29,6 +29,8 @@ struct MainView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
                     .indexViewStyle(PageIndexViewStyle.init(backgroundDisplayMode: .always))
                     .frame(height: 280)
+                } else {
+                    EmptyStateView
                 }
         
                 Spacer()
@@ -63,15 +65,62 @@ struct MainView: View {
 
     }
     
+    private var EmptyStateView: some View {
+        
+            VStack {
+                Text("You currently have no cards in the system")
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 48)
+                    .padding(.vertical)
+                Button {
+                    shouldPresentAddCardForm.toggle()
+                } label: {
+                    Text("+ Add Your First Card")
+                        .foregroundColor(Color(.systemBackground))
+                }
+                .padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
+                .background(Color(.label))
+                .cornerRadius(5)
+            }
+            .font(Font.system(size: 22, weight: .semibold))
+    }
     
     struct CreditCardView: View {
         
         let card: Card
+        @State private var showActionSheet: Bool = false
+        
+        private func handleDelete() {
+            let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+            context.delete(card)
+            do {
+                try context.save()
+            } catch {
+                print("error when saving data \(error)")
+            }
+        }
         
         var body: some View {
             VStack(alignment: .leading,spacing: 16, content: {
-                Text(card.name ?? "")
-                    .font(Font.system(size: 24, weight: .semibold, design: Font.Design.default))
+                
+                HStack {
+                    Text(card.name ?? "")
+                        .font(Font.system(size: 24, weight: .semibold, design: Font.Design.default))
+                    Spacer()
+                    Button {
+                        showActionSheet.toggle()
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(Font.system(size: 28,weight: .bold))
+                    }
+                    .actionSheet(isPresented: $showActionSheet) {
+                        .init(title: Text(card.name ?? ""),message: nil,buttons: [
+                            Alert.Button.destructive(Text("Delete Card"),action: handleDelete),
+                            Alert.Button.cancel()
+                        ])
+                    }
+                }
+                
                 HStack(){
                     Image("Visa")
                         .resizable()
