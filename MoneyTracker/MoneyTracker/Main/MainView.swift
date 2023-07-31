@@ -14,8 +14,12 @@ struct MainView: View {
     
     //amount to credit card variable
     @Environment(\.managedObjectContext) private var viewContext
+    
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: false)],animation: .default)
     private var cards: FetchedResults<Card>
+    
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \CardTransaction.timestamp, ascending: false)],animation: .default)
+    private var transactions: FetchedResults<CardTransaction>
     
     var body: some View {
         NavigationView {
@@ -45,6 +49,43 @@ struct MainView: View {
                     .fullScreenCover(isPresented: $shouldPresentTransactionForm) {
                         TransactionForm()
                     }
+                    
+                    ForEach(transactions) { transaction in
+                        
+                        VStack {
+                            HStack() {
+                                VStack(alignment: .leading) {
+                                    Text(transaction.name ?? "")
+                                            .font(.headline)
+                                    if let date = transaction.timestamp {
+                                        Text(dateFormatter.string(from: date))
+                                    }
+                                }
+                                Spacer()
+                                VStack(alignment: .trailing, spacing: 4) {
+                                    Button {
+                                        
+                                    } label: {
+                                        Image(systemName: "ellipsis")
+                                            .foregroundColor(.black)
+                                    }
+                                    .padding(EdgeInsets(top: 6, leading: 8, bottom: 4, trailing: 0))
+                                    Text(String(format: "$%.2f", transaction.amount))
+                                }
+                            }
+                            if let photoData = transaction.photoData, let uiImage = UIImage(data: photoData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                            }
+                        }
+                        .foregroundColor(Color(.label))
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(5)
+                        .shadow(radius: 5)
+                        .padding()
+                    }
 
                 } else {
                     EmptyStateView
@@ -62,6 +103,13 @@ struct MainView: View {
             }, trailing: addCardButton)
         }
     }
+    
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        return formatter
+    }()
     
     var addItemButton: some View {
         Button {
