@@ -14,6 +14,7 @@ struct MainView: View {
     
     //amount to credit card variable
     @Environment(\.managedObjectContext) private var viewContext
+    @State private var cardSelectionIndex: Int = 0
     
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Card.timestamp, ascending: false)],animation: .default)
     private var cards: FetchedResults<Card>
@@ -25,67 +26,22 @@ struct MainView: View {
         NavigationView {
             ScrollView {
                 if !cards.isEmpty {
-                    TabView {
-                        ForEach(cards) { card in
-                            CreditCardView(card: card)
+                    //get selected Card
+                    TabView(selection: $cardSelectionIndex) {
+                        ForEach(0..<cards.count) { index in
+                            CreditCardView(card: cards[index])
                                 .padding(.bottom, 40)
+                                .tag(index)
                         }
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
                     .indexViewStyle(PageIndexViewStyle.init(backgroundDisplayMode: .always))
                     .frame(height: 280)
-                    
-                    Text("Get started by adding your first transaction!")
-                    Button {
-                        shouldPresentTransactionForm.toggle()
-                    } label: {
-                        Text("+ Transaction")
-                            .padding(EdgeInsets(top: 10, leading: 14, bottom: 10, trailing: 14))
-                            .font(.headline)
-                            .background(Color(.label))
-                            .foregroundColor(Color(.systemBackground))
-                            .cornerRadius(5)
-                    }
-                    .fullScreenCover(isPresented: $shouldPresentTransactionForm) {
-                        TransactionForm()
-                    }
-                    
-                    ForEach(transactions) { transaction in
                         
-                        VStack {
-                            HStack() {
-                                VStack(alignment: .leading) {
-                                    Text(transaction.name ?? "")
-                                            .font(.headline)
-                                    if let date = transaction.timestamp {
-                                        Text(dateFormatter.string(from: date))
-                                    }
-                                }
-                                Spacer()
-                                VStack(alignment: .trailing, spacing: 4) {
-                                    Button {
-                                        
-                                    } label: {
-                                        Image(systemName: "ellipsis")
-                                            .foregroundColor(.black)
-                                    }
-                                    .padding(EdgeInsets(top: 6, leading: 8, bottom: 4, trailing: 0))
-                                    Text(String(format: "$%.2f", transaction.amount))
-                                }
-                            }
-                            if let photoData = transaction.photoData, let uiImage = UIImage(data: photoData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                            }
-                        }
-                        .foregroundColor(Color(.label))
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(5)
-                        .shadow(radius: 5)
-                        .padding()
-                    }
+                    
+                    Text(cards[cardSelectionIndex].name ?? "")
+
+                    TransactionListView(card: cards[cardSelectionIndex])
 
                 } else {
                     EmptyStateView
@@ -182,6 +138,7 @@ struct MainView: View {
                             .font(Font.system(size: 28,weight: .bold))
                     }
                     .actionSheet(isPresented: $showActionSheet) {
+
                         .init(title: Text(card.name ?? ""),message: nil,buttons: [
                             Alert.Button.default(Text("Edit"),action: {
                                 shouldShowEditForm.toggle()

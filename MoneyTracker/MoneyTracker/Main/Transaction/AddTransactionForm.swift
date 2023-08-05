@@ -1,5 +1,5 @@
 //
-//  TransactionForm.swift
+//  AddTransactionForm.swift
 //  MoneyTracker
 //
 //  Created by Nicolas Monzon on 30/7/2023.
@@ -7,7 +7,13 @@
 
 import SwiftUI
 
-struct TransactionForm: View {
+struct AddTransactionForm: View {
+    
+    let card: Card
+    
+    init(card: Card) {
+        self.card = card
+    }
     
     @Environment(\.presentationMode) var presentationMode
     @State private var name: String = ""
@@ -113,6 +119,7 @@ struct TransactionForm: View {
             transaction.amount = Float(self.amount) ?? 0
             transaction.timestamp = self.date
             transaction.photoData = self.photoData
+            transaction.card = card
             
             do {
                 try context.save()
@@ -126,8 +133,18 @@ struct TransactionForm: View {
     }
 }
 
-struct TransactionForm_Previews: PreviewProvider {
+struct AddTransactionForm_Previews: PreviewProvider {
+    static let firstCard: Card? = {
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let request = Card.fetchRequest()
+        request.sortDescriptors = [.init(key: "timestamp", ascending: false)]
+        return try? context.fetch(request).first
+    }()
+    
     static var previews: some View {
-        TransactionForm()
+        if let firstCard = firstCard {
+            AddTransactionForm(card: firstCard)
+        }
+        
     }
 }
